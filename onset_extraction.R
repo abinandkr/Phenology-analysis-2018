@@ -3,7 +3,7 @@ library(plyr)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-
+library(lubridate)
 rm(list = ls())
 
 
@@ -79,5 +79,19 @@ ggplot(data = phendat1)+ geom_line(aes(x = as.Date(datep), y = prop.02, col = 'd
 
 #flowering <- flowerdat %>%  group_by(datep,species_id,tag_id) %>% summarise(phenophase = 'flower', valuepa = max(valuepa))
 
-
 onset_dat <- phendat %>% ungroup() %>% group_by(species_id,ind_id,phenophase) %>% filter(!species_id %in% c(6,7,18)) %>% do(ons = onset(.$valuepa,.$datep)) %>% unnest()
+
+onset_dat$year <- year(onset_dat$onset_date)
+
+onset_dat$year_start <- as.Date(paste(onset_dat$year,'01','01',sep = '-'))
+
+onset_dat$julian <- onset_dat$onset_date - onset_dat$year_start
+
+onset_dat <- onset_dat %>% group_by(species_id,phenophase,year) %>% mutate(meanday = mean(julian)) %>% mutate(diff = abs(julian-meanday))
+
+onset_dat_sing <- onset_dat %>% group_by(species_id,phenophase,year,ind_id) %>% filter(diff == min(diff))
+
+onset_dat_cum <- onset_dat_sing %>% filter(phenophase %in% c('flower_bud','leaves_new')) %>% group_by(species_id,phenophase,year,onset_date,julian) %>% summarise(n = n())
+
+onset_dat_cum <- onset_dat_cum %>% group_by(species_id,phenophase,year) %>% mutate(cumn = cumsum(n))
+

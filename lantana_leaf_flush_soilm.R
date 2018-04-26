@@ -119,3 +119,8 @@ decompose()
 plot(dat2$prop~dat2$soilm)
 
 lm(dat2$prop~dat2$soilm)
+
+
+
+
+
