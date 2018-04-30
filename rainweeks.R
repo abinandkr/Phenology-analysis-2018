@@ -1,7 +1,13 @@
 rm(list = ls())
 library(tidyverse)   
 
+
 lant <- read.csv('lantana_phenology.csv', stringsAsFactors = F)
+
+
+plot(lant$prop[lant$phenophase == 'leaves_new'], typ = 'l')
+lines(lant$prop[lant$phenophase == 'flower_bud'], typ = 'l',col = 'red')
+
 
 wdat <- read.csv('weather_man_aut_day_compiled.csv', stringsAsFactors = F)
 
@@ -97,3 +103,4 @@ preddat3 <- predict(mod3,se.fit = TRUE)
 with(preddat3,lines(exp(fit)/(1+exp(fit)), col="blue"))
 with(preddat3, lines(exp(fit+1.96*se.fit)/(1+exp(fit+1.96*se.fit)), lty=2))
 with(preddat3, lines(exp(fit-1.96*se.fit)/(1+exp(fit-1.96*se.fit)), lty=2))
+
