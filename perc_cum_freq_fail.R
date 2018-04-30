@@ -143,6 +143,8 @@ cumdat$jul_datep <- as.numeric(cumdat$datep - cumdat$year_start)
 
 cumdat1 <- cumdat %>% group_by(species_id,phenophase,year_start)
 
+write.csv(cumdat1, 'cumulative_onset.csv',row.names = F)
+
 ggplot() + geom_line(data = cumdat1, aes(jul_datep,scalcumons, col = factor(year_start), group = factor(year_start))) + facet_grid(species_id~phenophase) +geom_vline(xintercept =365) + ggtitle('Scaled cumulative onset of phenophases')
 
 get_date <- function(a,b,perc){(as.numeric((b[1] - b[2]))/(a[1]-a[2])*(perc-a[1])) + b[1]}

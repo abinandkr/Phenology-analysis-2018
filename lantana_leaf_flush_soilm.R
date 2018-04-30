@@ -69,7 +69,7 @@ mod2 <- function(k,upper_bound, soil_saturation){
 
 
 k1 <- seq(0.025,.035,length.out = 20)
-ub1 <- seq(60,70, length.out = 21)
+ub1 <- seq(60,80, length.out = 21)
 ssemat <- matrix(NA, nrow = length(k1), ncol = length(ub1))
 
 for(i in 1:length(k1)){
@@ -109,18 +109,11 @@ dat2 <- left_join(lantleaf,dat1)
 
 years = as.Date(paste0(c(2008:2017),'-01-01'))
 plot(dat2$prop~dat2$datep, typ = 'l', lwd = 2)
-abline(v = years, col = 'purple')
 lines(dat2$soilmoist~dat2$Date, col = 'red', lwd = 2)
 
+boxplot(dat2$prop~round(dat2$soilmoist,0))
+
 upper_bound/exp(-k)
-
-decompose()
-
-plot(dat2$prop~dat2$soilm)
-
-lm(dat2$prop~dat2$soilm)
-
-
 
 
 

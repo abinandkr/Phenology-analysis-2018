@@ -41,12 +41,14 @@ server <- function(input, output) {
      raindat <- wdat %>% filter(Rainfall.mm >= input$raincut) %>% group_by(year) %>% slice(1)
      spc_dat <- left_join(spc_dat,raindat)
      spc_dat$julian <- spc_dat$julian - 15
-     plot(spc_dat$thp_50_julian~spc_dat$julian, xlim = c(0,200), ylim = c(0,200), xlab = 'Days to first rain', ylab = 'nth percentile population onset day')
+     plot(spc_dat$thp_50_julian~spc_dat$julian, xlim = c(0,200), ylim = c(0,200), xlab = 'Days to first rain', ylab = 'nth percentile population onset day', pch = 16)
      par(new = TRUE)
      plot(spc_dat$thp_25_julian~spc_dat$julian, xlim = c(0,200), ylim = c(0,200), col = 'blue', xlab = NA, ylab = NA)
      par(new = TRUE)
      plot(spc_dat$thp_75_julian~spc_dat$julian, xlim = c(0,200), ylim = c(0,200), col = 'red', xlab = NA, ylab = NA)
      text(spc_dat$julian,spc_dat$thp_50_julian,labels = spc_dat$year, cex = .7, pos = 2)
+     legend(170,25,c('25th percentile','50th percentile','75th percentile'), col = c('blue','black','red'), pch = c(1,16,1), bty = 'n')
+     abline(1,1, lty = 2)
    })
 }
 
