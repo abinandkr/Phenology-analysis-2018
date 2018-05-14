@@ -1,6 +1,7 @@
 rm(list = ls())
 library(tidyverse)   
 
+
 lant <- read.csv('lantana_phenology.csv', stringsAsFactors = F)
 
 
@@ -126,6 +127,7 @@ with(preddat3,lines(exp(fit)/(1+exp(fit)), col="blue"))
 with(preddat3, lines(exp(fit+1.96*se.fit)/(1+exp(fit+1.96*se.fit)), lty=2))
 with(preddat3, lines(exp(fit-1.96*se.fit)/(1+exp(fit-1.96*se.fit)), lty=2))
 
+<<<<<<< HEAD
 
 
 
@@ -171,3 +173,5 @@ abline(h = .75)
 
 
 testdat <- landat %>% filter(ind_id %in% c(5,9))
+=======
+>>>>>>> 4c764ac054a21988cb7d3d298861439d7ea08186
