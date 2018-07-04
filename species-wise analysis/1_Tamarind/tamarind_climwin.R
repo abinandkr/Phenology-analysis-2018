@@ -5,6 +5,15 @@ library(zoo)
 library(evd)
 library(lme4)
 
+plot_model <- function(prop,model, se.fit = FALSE){
+  preddat <- predict(model,se.fit = TRUE)
+  plot(prop, typ = 'l')
+  with(preddat, lines(exp(fit)/(1+exp(fit)), col="blue"))
+  if(se.fit == TRUE){
+    with(preddat, lines(exp(fit+1.96*se.fit)/(1+exp(fit+1.96*se.fit)), lty=2))
+    with(preddat, lines(exp(fit-1.96*se.fit)/(1+exp(fit-1.96*se.fit)), lty=2))
+  }
+}
 
 spcs <- 1
 
@@ -36,38 +45,29 @@ wdat$datep <- as.Date(wdat$datep)
 plot(dat_phenl$prop, typ = 'l')
 dat_phenl <- left_join(dat_phenl,wdat, by = c("datep" = "Date"))
 
-
 leaf_mod1 <- glm(prop~temp,data = dat_phenl,family = 'binomial')
 summary(leaf_mod1)
+plot_model(dat_phenl$prop,leaf_mod1)
 
 leaf_mod2 <- glm(prop~photoperiod,data = dat_phenl,family = 'binomial')
 summary(leaf_mod2)
+plot_model(dat_phenl$prop,leaf_mod2)
 
 dat_phenl$temp_photop_int <- dat_phenl$photoperiod*dat_phenl$temp/60
 
 leaf_mod3 <- glm(prop~photoperiod + temp_photop_int,data = dat_phenl,family = 'binomial')
 summary(leaf_mod3)
-
-plot_model <- function(prop,model, se.fit = FALSE){
-  preddat <- predict(model,se.fit = TRUE)
-  plot(prop, typ = 'l')
-  with(preddat, lines(exp(fit)/(1+exp(fit)), col="blue"))
-  if(se.fit == TRUE){
-    with(preddat, lines(exp(fit+1.96*se.fit)/(1+exp(fit+1.96*se.fit)), lty=2))
-    with(preddat, lines(exp(fit-1.96*se.fit)/(1+exp(fit-1.96*se.fit)), lty=2))
-  }
-}
-plot_model(dat_phenl$prop,leaf_climwin_mod2)
+plot_model(dat_phenl$prop,leaf_mod3)
 
 
 dat_phenl$datep1 <- format(as.Date(dat_phenl$datep), '%d/%m/%Y')
 wdat$Date1 <- format(as.Date(wdat$Date), '%d/%m/%Y')
-phenWin1 <- slidingwin(xvar = list(temp = temp),
+phenWin1 <- slidingwin(xvar = list(temp = temp, rain = rain),
                       cdate = wdat$Date1,
                       bdate = dat_phenl$datep1,
                       baseline = glm(prop ~ 1, data = dat_phenl, family = 'binomial'),
                       cinterval = 'day',
-                      range = c(100,0),
+                      range = c(50,0),
                       type = 'relative',
                       stat = 'mean',
                       func = 'lin',
@@ -75,7 +75,8 @@ phenWin1 <- slidingwin(xvar = list(temp = temp),
 
 phenWin1$combos
 leaf_climwin_mod1 <- phenWin1[[1]]$BestModel
-plot_model(leaf_climwin_mod1)
+plot_model(dat_phenl$prop,leaf_climwin_mod1)
+
 summary(phenWin1[[1]]$BestModel)
 moddat <- phenWin1[[1]]$BestModelData
 phenOutput <- phenWin1[[1]]$Dataset
@@ -84,12 +85,14 @@ plotweights(phenOutput)
 plotwin(phenOutput)
 
 
+########## Tested below hundred, reduced to 50 as best window is at 43 for speed
+
 phenWin2 <- slidingwin(xvar = list(temp = temp),
                        cdate = wdat$Date1,
                        bdate = dat_phenl$datep1,
                        baseline = glm(prop ~ 1, data = dat_phenl, family = 'binomial'),
                        cinterval = 'day',
-                       range = c(100,0),
+                       range = c(50,0),
                        type = 'relative',
                        stat = 'mean',
                        func = 'lin',
@@ -100,7 +103,7 @@ phenWin2 <- slidingwin(xvar = list(temp = temp),
 phenWin2$combos
 leaf_climwin_mod2 <- phenWin2[[1]]$BestModel
 summary(leaf_climwin_mod2)
-plot_model(leaf_climwin_mod2)
+plot_model(dat_phenl$prop,leaf_climwin_mod2)
 summary(phenWin2[[1]]$BestModel)
 moddat <- phenWin2[[1]]$BestModelData
 phenOutput <- phenWin2[[1]]$Dataset
@@ -125,7 +128,7 @@ phenWin3 <- slidingwin(xvar = list(temp = temp),
 phenWin3$combos
 leaf_climwin_mod3 <- phenWin3[[1]]$BestModel
 summary(leaf_climwin_mod3)
-plot_model(leaf_climwin_mod3)
+plot_model(dat_phenl$prop,leaf_climwin_mod3)
 summary(phenWin3[[1]]$BestModel)
 moddat <- phenWin3[[1]]$BestModelData
 phenOutput <- phenWin3[[1]]$Dataset
@@ -151,7 +154,7 @@ fl_mod2 <- glm(prop~temp,data = dat_phenf,family = 'binomial')
 summary(fl_mod2)
 plot_model(dat_phenf$prop,fl_mod2)
 
-dat_phenf$datep1 <- format(as.Date(dat_phenf$datep), '%d/%m/%Y')
+ dat_phenf$datep1 <- format(as.Date(dat_phenf$datep), '%d/%m/%Y')
 wdat$Date1 <- format(as.Date(wdat$Date), '%d/%m/%Y')
 
 phenWin1 <- slidingwin(xvar = list(rain = rain, temp = temp),

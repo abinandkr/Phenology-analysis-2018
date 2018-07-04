@@ -29,7 +29,7 @@ wdat$temp <- (as.numeric(wdat$Min.temp) + as.numeric(wdat$Max.temp))/2
 
 ui <- fluidPage(
    # Application title
-   titlePanel("Rishi Valey Phenology"),
+   titlePanel("Rishi Valley Phenology"),
         fluidRow(column(3,selectInput('spcs','Select Species',choices = unique(phendat$species_id))),
                  column(3,selectInput('phen','Select Species',choices = unique(phendat$phenophase))),
                  column(3,selectInput('weat','Select Weather variable',choices = c('rain' = 'Rainfall.mm', 'temp' = 'temp', 'mintemp' = 'Min.temp','maxtemp'='Max.temp'))),
@@ -51,7 +51,7 @@ server <- function(input, output) {
      date <- as.Date(raindat$Date)
      plot(phendat1$prop~as.Date(phendat1$datep), typ = 'l', ylab = 'Proportion',xlab = 'Date')
      lines(weather~date, col = 'blue', typ = 'h')
-     lines((c(NA,diff(wdat$photoperiod)^2))~wdat$Date, typ = 'l', col = 'darkorange',lty = 3)
+     #lines((c(NA,diff(wdat$photoperiod)^2))~wdat$Date, typ = 'l', col = 'darkorange',lty = 3)
      abline(v = as.Date(paste(c(2007:2017),'01','01',sep = '-')), col = 'orange',lty = 2)
      abline(h = 1, lty = 3, col = 'grey')
    })
